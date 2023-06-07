@@ -1,0 +1,164 @@
+select * from countries_tbl;
+---ANSWER TO Q1A;
+SELECT COUNTRY_NAME,  CASE 
+    WHEN REGION_ID = 1 THEN 'Europe' 
+    WHEN REGION_ID = 2 THEN 'Americas' 
+    WHEN REGION_ID = 3 THEN 'Asia' 
+    WHEN REGION_ID = 4 THEN 'Middle East and Africa' 
+    ELSE 'OTHERS' 
+    END as REGION FROM countries_tbl 
+    GROUP BY CASE 
+    WHEN REGION_ID = 1 THEN 'Europe' 
+    WHEN REGION_ID = 2 THEN 'Americas' 
+    WHEN REGION_ID = 3 THEN 'Asia' 
+    WHEN REGION_ID = 4 THEN 'Middle East and Africa' 
+    ELSE 'OTHERS' 
+    END, COUNTRY_NAME
+    ORDER BY REGION;
+
+---ANSWER TO Q1B
+SELECT REGION_ID, COUNT(REGION_ID) AS NO_REGION_ID, CASE 
+    WHEN REGION_ID = 1 THEN 'Europe' 
+    WHEN REGION_ID = 2 THEN 'Americas' 
+    WHEN REGION_ID = 3 THEN 'Asia' 
+    WHEN REGION_ID = 4 THEN 'Middle East and Africa' 
+    ELSE 'OTHERS' 
+    END as REGION FROM countries_tbl 
+    GROUP BY REGION_ID
+    ORDER BY COUNT(REGION_ID) DESC, REGION ASC;
+
+----ANSWER TO Q1C
+SELECT REGION_ID, COUNT(REGION_ID) AS NO_REGION_ID, CASE 
+    WHEN REGION_ID = 1 THEN 'Europe' 
+    WHEN REGION_ID = 2 THEN 'Americas' 
+    WHEN REGION_ID = 3 THEN 'Asia' 
+    WHEN REGION_ID = 4 THEN 'Middle East and Africa' 
+    ELSE 'OTHERS' 
+    END as REGION FROM countries_tbl 
+    GROUP BY REGION_ID
+    ORDER BY REGION ASC, COUNT(REGION_ID) DESC;
+
+----ANSWER TO Q1D
+SELECT SUBSTR(COUNTRY_NAME, 1, 1) AS INITIAL_COUNTRY_NAME, COUNT(SUBSTR(COUNTRY_NAME, 1, 1)) AS NO_OF_COUNTRIES
+    FROM countries_tbl
+    GROUP BY SUBSTR(COUNTRY_NAME, 1, 1)
+    ORDER BY COUNT(SUBSTR(COUNTRY_NAME, 1, 1)) DESC;
+
+
+
+SELECT * FROM LOCATIONS_TBL;
+----ANSWER TO Q2
+---SELECT  ('The address at location_id ' ||LOCATION_ID|| ' is ' ||STREET_ADDRESS|| CITY|| STATE_PROVINCE||POSTAL_CODE|| COUNTRY_ID) AS ADDRESS
+    FROM LOCATIONS_TBL
+    WHERE COUNTRY_ID <> 'DE';
+select concat('The address at location_id ', LOCATION_ID, ' is ', STREET_ADDRESS, CITY, STATE_PROVINCE, POSTAL_CODE, COUNTRY_ID) AS ADDRESS
+	FROM locations_tbl
+    WHERE COUNTRY_ID <> 'DE';
+
+
+SELECT * FROM JOBS_TBL;
+
+--ANSWER TO Q3A
+SELECT JOB_TITLE, CASE
+    WHEN JOB_TITLE LIKE '%Account%'  THEN 'Accounting'
+    WHEN JOB_TITLE LIKE '%Admin%' THEN 'Administration'
+    WHEN JOB_TITLE LIKE '%President%' THEN 'Presidental'
+    WHEN JOB_TITLE LIKE '%Manager%' THEN 'Mnangerial'
+    WHEN JOB_TITLE LIKE '%Clerk%' THEN 'Clerical'
+    ELSE 'Others'
+    END AS JOB_CLASS
+    FROM jobs_tbl;
+
+---ANSWER TO Q3B
+
+SELECT CASE
+    WHEN JOB_TITLE LIKE '%Account%'  THEN 'Accounting'
+    WHEN JOB_TITLE LIKE '%Admin%' THEN 'Administration'
+    WHEN JOB_TITLE LIKE '%President%' THEN 'Presidental'
+    WHEN JOB_TITLE LIKE '%Manager%' THEN 'Mnangerial'
+    WHEN JOB_TITLE LIKE '%Clerk%' THEN 'Clerical'
+    ELSE 'Others'
+    END AS JOB_CLASS, COUNT(CASE
+    WHEN JOB_TITLE LIKE '%Account%'  THEN 'Accounting'
+    WHEN JOB_TITLE LIKE '%Admin%' THEN 'Administration'
+    WHEN JOB_TITLE LIKE '%President%' THEN 'Presidental'
+    WHEN JOB_TITLE LIKE '%Manager%' THEN 'Mnangerial'
+    WHEN JOB_TITLE LIKE '%Clerk%' THEN 'Clerical'
+    ELSE 'Others'
+    END) AS COUNT_OF_EMPLOYEES, round(AVG(MIN_SALARY),2) AS AVG_SAL_LOW_LEVEL,
+    round(AVG(MAX_SALARY),2) AS AVG_SAL_HIGH_LEVEL,
+    round(AVG((MAX_SALARY+MIN_SALARY)/2),2) AS AVG_SAL_LEVEL
+    FROM jobs_tbl
+GROUP BY CASE
+    WHEN JOB_TITLE LIKE '%Account%'  THEN 'Accounting'
+    WHEN JOB_TITLE LIKE '%Admin%' THEN 'Administration'
+    WHEN JOB_TITLE LIKE '%President%' THEN 'Presidental'
+    WHEN JOB_TITLE LIKE '%Manager%' THEN 'Mnangerial'
+    WHEN JOB_TITLE LIKE '%Clerk%' THEN 'Clerical'
+    ELSE 'Others' END;
+
+---ANSWER TO Q4A
+----SELECT DEPENDENT_ID, FIRST_NAME, LAST_NAME, CASE
+    WHEN FIRST_NAME = '(A_%) OR (E_%) OR (I_%) OR (O_%) OR (U_%)' THEN (SUBSTR(FIRST_NAME,1,3) ||SUBSTR(LAST_NAME, 1,2)||'@xyzmail.com')
+    WHEN FIRST_NAME <> '(A_%) OR (E_%) OR (I_%) OR (O_%) OR (U_%)' AND LENGTH(LAST_NAME) > 4 THEN (SUBSTR(LAST_NAME,1,3)|| SUBSTR(FIRST_NAME,1,2)||'@xyzmail.com')
+    ELSE (SUBSTR(FIRST_NAME,1,2) ||SUBSTR(LAST_NAME,1,2)||'@xyzmail.com')
+    END AS COMPANY_EMAIL
+    FROM dependents_tbl;
+    
+	SELECT DEPENDENT_ID, FIRST_NAME, LAST_NAME, CASE
+    WHEN FIRST_NAME = '(A_%) OR (E_%) OR (I_%) OR (O_%) OR (U_%)' THEN concat(SUBSTR(FIRST_NAME,1,3), SUBSTR(LAST_NAME, 1,2), '@xyzmail.com')
+    WHEN FIRST_NAME <> '(A_%) OR (E_%) OR (I_%) OR (O_%) OR (U_%)' AND LENGTH(LAST_NAME) > 4 THEN concat(SUBSTR(LAST_NAME,1,3),  SUBSTR(FIRST_NAME,1,2), '@xyzmail.com')
+    ELSE concat(SUBSTR(FIRST_NAME,1,2) ,SUBSTR(LAST_NAME,1,2), '@xyzmail.com')
+    END AS COMPANY_EMAIL
+    FROM dependents_tbl;
+    
+    
+    
+    ---ANSWER TO Q5A
+    SELECT EXTRACT(YEAR FROM HIRE_DATE) AS HIRE_YEAR,  COUNT(EXTRACT(YEAR FROM HIRE_DATE)) AS CNT
+    FROM employees_tbl
+    GROUP BY EXTRACT(YEAR FROM HIRE_DATE)
+    HAVING COUNT(EXTRACT(YEAR FROM HIRE_DATE)) > 1;
+    
+    ----SELECT TO_CHAR(HIRE_DATE,'YYYY') AS HIRE_YEAR, COUNT(TO_CHAR(HIRE_DATE,'YYYY')) AS CNT FROM employees_tbl
+    GROUP BY TO_CHAR(HIRE_DATE,'YYYY')
+    HAVING COUNT(TO_CHAR(HIRE_DATE,'YYYY')) > 1;
+    
+    ----ANSWER TO Q5B
+    
+	SELECT EXTRACT(MONTH FROM HIRE_DATE) AS HIRE_MONTH,  COUNT(EXTRACT(MONTH FROM HIRE_DATE)) AS CNT
+    FROM employees_tbl
+    GROUP BY EXTRACT(MONTH FROM HIRE_DATE)
+    HAVING COUNT(EXTRACT(MONTH FROM HIRE_DATE)) > 1
+	ORDER BY EXTRACT(MONTH FROM HIRE_DATE);
+
+	-----SELECT TO_CHAR(HIRE_DATE,'MM') AS HIRE_MONTH, COUNT(TO_CHAR(HIRE_DATE,'MM')) AS CNT FROM employees_tbl
+    GROUP BY TO_CHAR(HIRE_DATE,'MM')
+    HAVING COUNT(TO_CHAR(HIRE_DATE,'MM')) > 1
+	ORDER BY TO_CHAR(HIRE_DATE,'MM');
+    
+    
+    ---- ANSWER TO Q6A
+    
+    
+    SELECT * FROM emergency_contacts_tbl;
+    
+    SELECT FIRST_NAME || ' ' || LAST_NAME AS EMPLOYEE_NAME, CASE
+    WHEN HOME_PHONE <> '-' THEN HOME_PHONE
+    WHEN WORK_PHONE <> '-' THEN WORK_PHONE
+    WHEN CELL_PHONE <> '-' THEN CELL_PHONE
+    ELSE '999-999-9999'
+    END AS CONTACT_DETAILS
+    FROM emergency_contacts_tbl;
+    
+    
+    
+    ---- ANSWER TO Q6B
+    
+    SELECT concat('EMPLOYEE_ID is ', EMPLOYEE_ID, ' ', FIRST_NAME, ' ', LAST_NAME, 'and her available phone is ', CASE
+    WHEN HOME_PHONE <> '-' THEN HOME_PHONE
+    WHEN WORK_PHONE <> '-' THEN WORK_PHONE
+    WHEN CELL_PHONE <> '-' THEN CELL_PHONE
+    ELSE '999-999-9999'
+    END)  AS CONTACT_DETAILS
+	FROM emergency_contacts_tbl;
